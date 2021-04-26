@@ -1,30 +1,29 @@
 package com.jun.spring_practice.learningtest;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.*;
+import org.junit.*;
+import static org.hamcrest.Matchers.*;
 
 import java.io.IOException;
 
-import org.junit.Before;
-import org.junit.Test;
+import static org.hamcrest.MatcherAssert.*;
 
 public class CalcSumTest {
-	private Calculator cal;
-	private String numFilepath;
+	Calculator calculator;
+	String numFilePath;
 	
 	@Before
 	public void setUp() {
-		this.cal = new Calculator();
-		this.numFilepath = getClass().getResource("test_text.txt").getPath();
+		calculator = new Calculator();
+		numFilePath= getClass().getClassLoader().getResource("numbers.txt").getPath();
 	}
 	
 	@Test
 	public void sumOfNumbers() throws IOException {
-		assertThat(cal.calcSum(this.numFilepath), is(10));
+		assertThat(calculator.calcSum(numFilePath), is(10));
 	}
 	
 	@Test
-	public void productOfNumbers() throws IOException {
-		assertThat(cal.calcProd(this.numFilepath), is(24));
+	public void multiplyOfNumbers() throws IOException {
+		assertThat(calculator.calcMultiply(this.numFilePath), is(24));
 	}
 }

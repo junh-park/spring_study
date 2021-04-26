@@ -9,6 +9,7 @@ import javax.sql.DataSource;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 
+import com.jun.spring_practice.daostrategy.StatementStrategy;
 import com.jun.spring_practice.entity.User;
 
 public class UserDao {
@@ -38,11 +39,9 @@ public class UserDao {
 	}
 
 	public void deleteAll() throws SQLException {
-		this.jdbcContext.workWithStatementStrategy(c -> {
-			return c.prepareStatement("delete from users");
-		});
+		this.jdbcContext.executeSql("delete from users");
 	}
-	
+
 	public User get(String id) throws ClassNotFoundException, SQLException {
 		Connection con = null;
 		PreparedStatement ps = null;

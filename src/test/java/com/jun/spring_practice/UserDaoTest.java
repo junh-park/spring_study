@@ -77,8 +77,4 @@ public class UserDaoTest {
 
 		dao.get("unknown_id");
 	}
-
-//	public static void main(String[] args) {
-//		JUnitCore.main("com.jun.spring_practice.UserDaoTest");
-//	}
 }

@@ -1,66 +1,67 @@
 package com.jun.spring_practice.learningtest;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
+import com.jun.spring_practice.learningtest.template.LineCallback;
+
 public class Calculator {
 
-	public Integer calcSum(String filePath) throws IOException {
-		BufferedReaderCallback callback = br -> {
-			Integer sum = 0;
-			String line = null;
-
-			while ((line = br.readLine()) != null) {
-				sum += Integer.valueOf(line);
-			}
-
-			return sum;
-		};
-
-		return fileReadTemplate(filePath, callback);
-	}
-
-
-	public int calcProd(String path) throws IOException {
-		BufferedReaderCallback brc = new BufferedReaderCallback() {
-			
-			public Integer doSomethingWithReader(BufferedReader br) throws IOException {	
-				Integer prod = 1;
+	public int calcSum(String path) throws IOException {
+		BufferedReaderCallback sumCallback = new BufferedReaderCallback() {
+			public Integer doSomethingWithReader(BufferedReader br) throws IOException {
+				Integer sum = 0;
 				String line = null;
-				
-				while((line = br.readLine()) != null) {
-					prod *= Integer.valueOf(line);
+				while ((line = br.readLine()) != null ) {
+					sum += Integer.valueOf(line);
 				}
-				return prod;
+				return sum;
 			}
 		};
-		return fileReadTemplate(path, brc);
+		return fileReadTemplate(path, sumCallback);
 	}
 	
-	public Integer fileReadTemplate(String filePath, BufferedReaderCallback callback)
-			throws IOException {
+	public Integer calcMultiply(String numFilePath) throws IOException {
+			LineCallback lineCallback = new LineCallback() {
+				public Integer doSomethingWithLine(String line, Integer value) {
+					return value * Integer.valueOf(line);
+				}
+			};
+			return lineReadTemplate(numFilePath, lineCallback, 1);
+	}
+
+	private int lineReadTemplate(String path, LineCallback callback, int initVal) throws IOException {
 		BufferedReader br = null;
-
 		try {
-			br = new BufferedReader(new FileReader(filePath));
-
-			int ret = callback.doSomethingWithReader(br);
-
-			return ret;
-
-		} catch (IOException e) {
+			br = new BufferedReader(new FileReader(path));
+			Integer res = initVal;
+			String line = null;
+			while ((line = br.readLine()) != null) {
+				res = callback.doSomethingWithLine(line, res);
+			}
+			return res;
+		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			throw e;
-		} finally {
-			if (br != null) {
-				try {
-					br.close();
-				} catch (IOException e) {
-					e.getMessage();
-				}
-			}
+		}
+		finally {
+			if (br != null) try { br.close(); } catch (IOException e) {System.out.println(e.getMessage());}
+		}
+	}
+	
+	private int fileReadTemplate(String path, BufferedReaderCallback callback) throws IOException {
+		BufferedReader br = null;
+		try {
+			br = new BufferedReader(new FileReader(path));
+			int ret = callback.doSomethingWithReader(br);
+			return ret;
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			throw e;
+		}
+		finally {
+			if (br != null) try { br.close(); } catch (IOException e) {System.out.println(e.getMessage());}
 		}
 	}
 }

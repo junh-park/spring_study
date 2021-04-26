@@ -1,8 +1,5 @@
 package com.jun.spring_practice;
 
-import org.junit.Test;
-import org.springframework.context.support.GenericXmlApplicationContext;
-
 public class UserDaoTestMain {
 
 //	public static void main(String[] args) throws ClassNotFoundException, SQLException {
@@ -21,8 +18,8 @@ public class UserDaoTestMain {
 //		context.close();
 //		
 //		}
-	@Test
-	public void addAndGet() {
-		new GenericXmlApplicationContext("applicationiContext.xml");
-	}
+//	@Test
+//	public void addAndGet() {
+//		new GenericXmlApplicationContext("applicationContext.xml");
+//	}
 }
