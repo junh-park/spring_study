@@ -23,19 +23,19 @@ public class Calculator {
 	}
 	
 	public Integer calcMultiply(String numFilePath) throws IOException {
-			LineCallback lineCallback = new LineCallback() {
+			LineCallback<Integer> lineCallback = new LineCallback<Integer>() {
 				public Integer doSomethingWithLine(String line, Integer value) {
 					return value * Integer.valueOf(line);
-				}
 			};
+		};
 			return lineReadTemplate(numFilePath, lineCallback, 1);
 	}
 
-	private int lineReadTemplate(String path, LineCallback callback, int initVal) throws IOException {
+	private <T> T lineReadTemplate(String path, LineCallback<T> callback, T initVal) throws IOException {
 		BufferedReader br = null;
 		try {
 			br = new BufferedReader(new FileReader(path));
-			Integer res = initVal;
+			T res = initVal;
 			String line = null;
 			while ((line = br.readLine()) != null) {
 				res = callback.doSomethingWithLine(line, res);
