@@ -16,4 +16,19 @@
 	<bean id="userDao" class="com.jun.spring_practice.dao.UserDao">
 		<property name="dataSource" ref="dataSource"/>
 	</bean>
+	<bean id="Oracle" class="org.springframework.jdbc.support.SQLErrorCodes">
+		<property name="badSqlGrammarCodes">
+		<value>900,903,917,936,942,17006</value>
+		</property>
+		<property name="InvalidResultSetAccessCodes">
+			<value>17003</value>
+		</property>
+		<property name="duplicateKeyCodes">
+			<value>1</value>
+		</property>
+		<property name="dataIntegrityViolationCodes">
+			<value>1400,1722,2291,2292</value>
+		</property>
+		
+	</bean>
 </beans>

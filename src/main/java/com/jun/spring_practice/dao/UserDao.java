@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
 import com.jun.spring_practice.entity.User;
+import com.jun.spring_practice.exception.DuplicateUserIdException;
 
 public class UserDao {
 	private JdbcTemplate jdbcTemplate;
@@ -28,7 +29,7 @@ public class UserDao {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 	}
 
-	public void add(final User user) {
+	public void add(final User user) throws DuplicateUserIdException {
 		this.jdbcTemplate.update("insert into users(id, name, password) values(?,?,?)", user.getId(), user.getName(), user.getPassword());
 	}
 
