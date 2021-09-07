@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import javax.management.RuntimeErrorException;
 import javax.sql.DataSource;
 
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -23,13 +24,15 @@ public class UserDao {
 			return user;
 		}
 	};
-	public UserDao() {}
+
+	public UserDao() {
+	}
 
 	public void setDataSource(DataSource dataSource) {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 	}
 
-	public void add(final User user) throws DuplicateUserIdException {
+	public void add(final User user) {
 		this.jdbcTemplate.update("insert into users(id, name, password) values(?,?,?)", user.getId(), user.getName(), user.getPassword());
 	}
 
@@ -38,9 +41,10 @@ public class UserDao {
 	}
 
 	public User get(String id) {
-		return this.jdbcTemplate.queryForObject("select * from users where id = ?", new Object[] {id}, this.userMapper);
+		return this.jdbcTemplate.queryForObject("select * from users where id = ?", new Object[] { id },
+				this.userMapper);
 	}
-	
+
 	public int getCount() {
 		return this.jdbcTemplate.queryForObject("select count(*) from users", Integer.class);
 	}

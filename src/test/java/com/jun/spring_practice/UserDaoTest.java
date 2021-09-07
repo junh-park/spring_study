@@ -30,9 +30,9 @@ public class UserDaoTest {
 
 	@Before
 	public void setUp() {
-		this.user1 = new User("1", "park", "springno1");
-		this.user2 = new User("2", "lee", "springno2");
-		this.user3 = new User("3", "park", "springno3");
+		this.user1 = new User("2", "park", "springno1");
+		this.user2 = new User("3", "lee", "springno2");
+		this.user3 = new User("1", "kim", "springno3");
 	}
 
 	@Test 
@@ -100,9 +100,9 @@ public class UserDaoTest {
 		dao.add(user3);
 		List<User> users3 = dao.getAll();
 		assertThat(users3.size(), is(3));
-		checkSameUser(user1, users3.get(0));
-		checkSameUser(user2, users3.get(1));
-		checkSameUser(user3, users3.get(2));
+		checkSameUser(user3, users3.get(0));
+		checkSameUser(user1, users3.get(1));
+		checkSameUser(user2, users3.get(2));
 	}
 
 	private void checkSameUser(User user1, User user2) {

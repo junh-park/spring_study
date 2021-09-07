@@ -16,11 +16,7 @@ public class JdbcContext {
 	}
 	
 	public void executeSql(final String query) throws SQLException {
-		workWithStatementStrategy(new StatementStrategy() {
-			public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
-				return c.prepareStatement(query);
-			}
-		});
+		workWithStatementStrategy(c -> c.prepareStatement(query));
 	}
 	
 	public void workWithStatementStrategy(StatementStrategy stmt) throws SQLException {

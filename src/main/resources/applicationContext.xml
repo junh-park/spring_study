@@ -29,6 +29,5 @@
 		<property name="dataIntegrityViolationCodes">
 			<value>1400,1722,2291,2292</value>
 		</property>
-		
 	</bean>
 </beans>
