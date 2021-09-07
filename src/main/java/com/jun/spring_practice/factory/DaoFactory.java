@@ -11,14 +11,15 @@ import com.jun.spring_practice.connectionmaker.OConnectionMaker;
 import com.jun.spring_practice.dao.AccountDao;
 import com.jun.spring_practice.dao.MessageDao;
 import com.jun.spring_practice.dao.UserDao;
+import com.jun.spring_practice.dao.UserDaoJDBC;
 
 @Configuration
 public class DaoFactory {
 
 	@Bean
 	public UserDao userDao() {
-		UserDao userDao = new UserDao();
-		userDao.setDataSource(dataSource());
+		UserDao userDao = new UserDaoJDBC();
+//		userDao.setDataSource(dataSource());
 		return userDao;
 	}
 	

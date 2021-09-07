@@ -7,13 +7,14 @@ import com.jun.spring_practice.connectionmaker.ConnectionMaker;
 import com.jun.spring_practice.connectionmaker.CountingConnectionMaker;
 import com.jun.spring_practice.connectionmaker.MConnectionMaker;
 import com.jun.spring_practice.dao.UserDao;
+import com.jun.spring_practice.dao.UserDaoJDBC;
 
 @Configuration
 public class CountingDaoFactory {
 	
 	@Bean
 	public UserDao userDao() {
-		UserDao userDao = new UserDao();
+		UserDao userDao = new UserDaoJDBC();
 //		userDao.setDataSource(dataSource);;
 		return userDao;
 	}
