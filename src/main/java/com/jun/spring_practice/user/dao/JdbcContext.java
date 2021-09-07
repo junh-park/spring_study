@@ -1,4 +1,4 @@
-package com.jun.spring_practice.dao;
+package com.jun.spring_practice.user.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
-import com.jun.spring_practice.daostrategy.StatementStrategy;
+import com.jun.spring_practice.user.dao.strategy.StatementStrategy;
 
 public class JdbcContext {
 	private DataSource dataSource;

@@ -1,6 +1,6 @@
-package com.jun.spring_practice.entity;
+package com.jun.spring_practice.user.entity;
 
-import com.jun.spring_practice.entity.domain.Level;
+import com.jun.spring_practice.user.domain.Level;
 
 public class User {
 
@@ -20,7 +20,17 @@ public class User {
 		this.recommend = recommend;
 	}
 
-	public User() {}
+	public User() {
+	}
+
+	public void upgradeLevel() {
+		Level nextLevel = this.level.nextLevel();
+		if (nextLevel == null) {
+			throw new IllegalStateException(this.level + " is not upgradable");
+		} else {
+			this.level = nextLevel;
+		}
+	}
 
 	public String getId() {
 		return id;

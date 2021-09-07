@@ -8,10 +8,10 @@ import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 
 import com.jun.spring_practice.connectionmaker.MConnectionMaker;
 import com.jun.spring_practice.connectionmaker.OConnectionMaker;
-import com.jun.spring_practice.dao.AccountDao;
-import com.jun.spring_practice.dao.MessageDao;
-import com.jun.spring_practice.dao.UserDao;
-import com.jun.spring_practice.dao.UserDaoJDBC;
+import com.jun.spring_practice.user.dao.AccountDao;
+import com.jun.spring_practice.user.dao.MessageDao;
+import com.jun.spring_practice.user.dao.UserDao;
+import com.jun.spring_practice.user.dao.UserDaoJDBC;
 
 @Configuration
 public class DaoFactory {

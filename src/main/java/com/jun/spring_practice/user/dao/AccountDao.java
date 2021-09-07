@@ -1,4 +1,4 @@
-package com.jun.spring_practice.dao;
+package com.jun.spring_practice.user.dao;
 
 import com.jun.spring_practice.connectionmaker.ConnectionMaker;
 

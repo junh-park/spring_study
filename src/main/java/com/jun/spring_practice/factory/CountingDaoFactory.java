@@ -6,8 +6,8 @@ import org.springframework.context.annotation.Configuration;
 import com.jun.spring_practice.connectionmaker.ConnectionMaker;
 import com.jun.spring_practice.connectionmaker.CountingConnectionMaker;
 import com.jun.spring_practice.connectionmaker.MConnectionMaker;
-import com.jun.spring_practice.dao.UserDao;
-import com.jun.spring_practice.dao.UserDaoJDBC;
+import com.jun.spring_practice.user.dao.UserDao;
+import com.jun.spring_practice.user.dao.UserDaoJDBC;
 
 @Configuration
 public class CountingDaoFactory {

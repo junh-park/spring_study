@@ -1,10 +1,10 @@
-package com.jun.spring_practice.daostrategy;
+package com.jun.spring_practice.user.dao.strategy;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import com.jun.spring_practice.entity.User;
+import com.jun.spring_practice.user.entity.User;
 
 public class AddStatement implements StatementStrategy {
 	private User user;

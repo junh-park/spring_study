@@ -1,7 +1,7 @@
-package com.jun.spring_practice;
+package com.jun.spring_practice.user.dao;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -14,16 +14,11 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
-import org.springframework.jdbc.support.SQLExceptionTranslator;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.jun.spring_practice.dao.UserDao;
-import com.jun.spring_practice.entity.User;
-import com.jun.spring_practice.entity.domain.Level;
-
-import oracle.jdbc.driver.OracleSQLException;
+import com.jun.spring_practice.user.domain.Level;
+import com.jun.spring_practice.user.entity.User;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations="/applicationContext.xml")
@@ -131,6 +126,28 @@ public class UserDaoTest {
 //			assertThat(set.translate(null, null, sqlEx), is(DuplicateKeyException.class));
 //		}
 //	}
+	
+	@Test
+	public void update() {
+		dao.deleteAll();
+		
+		dao.add(user1);
+		dao.add(user2);
+		
+		user1.setName("jun");
+		user1.setPassword("spring06");
+		user1.setLevel(Level.GOLD);
+		user1.setLogin(1000);
+		user1.setRecommend(999);
+		dao.update(user1);
+		
+		User user1update = dao.get(user1.getId());
+		User user2noupdate= dao.get(user2.getId());
+		
+		checkSameUser(user1update, user1);
+		checkSameUser(user2noupdate, user2);
+		
+	}
 	
 	private void checkSameUser(User user1, User user2) {
 		assertThat(user1.getId(), is(user2.getId()));

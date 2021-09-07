@@ -1,8 +1,8 @@
-package com.jun.spring_practice.dao;
+package com.jun.spring_practice.user.dao;
 
 import java.util.List;
 
-import com.jun.spring_practice.entity.User;
+import com.jun.spring_practice.user.entity.User;
 
 public interface UserDao {
 	void add(User user);
@@ -10,4 +10,5 @@ public interface UserDao {
 	List<User> getAll();
 	void deleteAll();
 	int getCount();
+	void update(User user1);
 }

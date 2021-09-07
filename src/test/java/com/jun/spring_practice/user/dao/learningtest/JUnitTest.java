@@ -1,4 +1,4 @@
-package com.jun.spring_practice;
+package com.jun.spring_practice.user.dao.learningtest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

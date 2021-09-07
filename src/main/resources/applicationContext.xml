@@ -13,21 +13,29 @@
 		<property name="username" value="root" />
 		<property name="password" value="qkrwnsghd" />
 	</bean>
-	<bean id="userDao" class="com.jun.spring_practice.dao.UserDaoJDBC">
+	<bean id="userDao" class="com.jun.spring_practice.user.dao.UserDaoJDBC">
 		<property name="dataSource" ref="dataSource"/>
 	</bean>
-	<bean id="Oracle" class="org.springframework.jdbc.support.SQLErrorCodes">
-		<property name="badSqlGrammarCodes">
-		<value>900,903,917,936,942,17006</value>
-		</property>
-		<property name="InvalidResultSetAccessCodes">
-			<value>17003</value>
-		</property>
-		<property name="duplicateKeyCodes">
-			<value>1</value>
-		</property>
-		<property name="dataIntegrityViolationCodes">
-			<value>1400,1722,2291,2292</value>
-		</property>
+	<bean id="userService" class="com.jun.spring_practice.user.service.UserService">
+		<property name="userDao" ref="userDao"/>
+		<property name="userLevelUpgradePolicy" ref="userLevelUpgradePolicy" />
+	</bean> 
+	<bean id="userLevelUpgradePolicy" class="com.jun.spring_practice.user.service.NormalUserUpgradePolicy">
+		<property name="userDao" ref="userDao" />
 	</bean>
+	
+<!-- 	<bean id="Oracle" class="org.springframework.jdbc.support.SQLErrorCodes"> -->
+<!-- 		<property name="badSqlGrammarCodes"> -->
+<!-- 		<value>900,903,917,936,942,17006</value> -->
+<!-- 		</property> -->
+<!-- 		<property name="InvalidResultSetAccessCodes"> -->
+<!-- 			<value>17003</value> -->
+<!-- 		</property> -->
+<!-- 		<property name="duplicateKeyCodes"> -->
+<!-- 			<value>1</value> -->
+<!-- 		</property> -->
+<!-- 		<property name="dataIntegrityViolationCodes"> -->
+<!-- 			<value>1400,1722,2291,2292</value> -->
+<!-- 		</property> -->
+<!-- 	</bean> -->
 </beans>

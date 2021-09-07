@@ -1,4 +1,4 @@
-package com.jun.spring_practice.daostrategy;
+package com.jun.spring_practice.user.dao.strategy;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

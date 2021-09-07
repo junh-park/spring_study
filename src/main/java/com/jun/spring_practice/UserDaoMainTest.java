@@ -4,8 +4,8 @@ import java.sql.SQLException;
 
 import org.springframework.context.support.GenericXmlApplicationContext;
 
-import com.jun.spring_practice.dao.UserDao;
-import com.jun.spring_practice.entity.User;
+import com.jun.spring_practice.user.dao.UserDao;
+import com.jun.spring_practice.user.entity.User;
 
 public class UserDaoMainTest {
 

@@ -1,6 +1,9 @@
-package com.jun.spring_practice.learningtest;
+package com.jun.spring_practice.user.dao.learningtest;
 
 import org.junit.*;
+
+import com.jun.spring_practice.learningtest.Calculator;
+
 import static org.hamcrest.Matchers.*;
 
 import java.io.IOException;
