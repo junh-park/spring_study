@@ -20,7 +20,7 @@ public class JUnitTest {
 	@Autowired
 	ApplicationContext context;
 	
-	static Set<JUnitTest> testObject = new HashSet<>();
+	static Set<JUnitTest> testObject = new HashSet<JUnitTest>();
 	static ApplicationContext contextObject = null;
 	
 	@Test
