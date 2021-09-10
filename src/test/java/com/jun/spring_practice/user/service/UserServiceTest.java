@@ -5,6 +5,7 @@ import static com.jun.spring_practice.user.service.NormalUserUpgradePolicy.MIN_R
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,6 +14,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
@@ -32,14 +34,11 @@ import com.jun.spring_practice.user.service.UserServiceTest.MockMailSender;
 @ContextConfiguration(locations = "/applicationContext.xml")
 public class UserServiceTest {
 
-	@Autowired
-	UserService userService;
-	@Autowired
-	UserDao userDao;
-	@Autowired
-	PlatformTransactionManager transactionManager;
-	@Autowired
-	MailSender mailSender;
+	@Autowired UserService userService;
+	@Autowired UserServiceImpl userServiceImpl;
+	@Autowired UserDao userDao;
+	@Autowired PlatformTransactionManager transactionManager;
+	@Autowired MailSender mailSender;
 	List<User> users;
 
 	@Before
@@ -86,22 +85,52 @@ public class UserServiceTest {
 
 	@Test
 	public void upgradeAllOrNothing() throws Exception {
-		UserService testUserService = new TestUserService(users.get(3).getId());
+		TestUserService testUserService = new TestUserService(users.get(3).getId());
 		testUserService.setUserDao(this.userDao);
-		testUserService.setTransactionManager(transactionManager);
 		testUserService.setMailSender(mailSender);
+		
+		UserServiceTx userServiceTx = new UserServiceTx();
+		userServiceTx.setTransactionManager(transactionManager);
+		userServiceTx.setUserService(testUserService);
 		
 		for (User user : users) {
 			userDao.add(user);
 		}
 
 		try {
-			testUserService.upgradeLevels();
+			userServiceTx.upgradeLevels();
 			fail("TestUserServiceException expected");
-		} catch (TestUserServiceException e) {
-		}
-
+		} catch (TestUserServiceException e) {		}
 		checkLevelUpdated(users.get(1), false);
+	}
+	
+	@Test
+	public void mockUpgradeLevels() {
+		UserServiceImpl userServiceImpl = new UserServiceImpl();
+		
+		UserDao mockUserDao = mock(UserDao.class);
+		when(mockUserDao.getAll()).thenReturn(this.users);
+		userServiceImpl.setUserDao(mockUserDao);
+		
+		MailSender mockMailSender = mock(MailSender.class);
+		userServiceImpl.setMailSender(mockMailSender);
+		
+		userServiceImpl.upgradeLevels();
+	
+		verify(mockUserDao, times(2)).update(any(User.class));
+		verify(mockUserDao, times(2)).update(any(User.class));
+		verify(mockUserDao).update(users.get(1));
+		assertThat(users.get(1).getLevel(), is(Level.SILVER));
+		verify(mockUserDao).update(users.get(3));
+		assertThat(users.get(3).getLevel(), is(Level.GOLD));
+		
+		ArgumentCaptor<SimpleMailMessage> mailMessageArg = ArgumentCaptor.forClass(SimpleMailMessage.class);
+		verify(mockMailSender, times(2)).send(mailMessageArg.capture());
+		List<SimpleMailMessage> mailMessages = mailMessageArg.getAllValues();
+		assertThat(mailMessages.get(0).getTo()[0], is(users.get(1).getEmail()));
+		assertThat(mailMessages.get(1).getTo()[0], is(users.get(3).getEmail()));
+		
+	
 	}
 	
 	@Test
@@ -112,9 +141,9 @@ public class UserServiceTest {
 		}
 
 		MockMailSender mockMailSender = new MockMailSender();
-		userService.setMailSender(mockMailSender);
+		userServiceImpl.setMailSender(mockMailSender);
 		
-		userService.upgradeLevels();
+		userServiceImpl.upgradeLevels();
 		
 		checkLevelUpdated(users.get(0), false);
 		checkLevelUpdated(users.get(1), true);
@@ -140,10 +169,8 @@ public class UserServiceTest {
 		}
 
 		public void send(SimpleMailMessage... simpleMessages) throws MailException {
-			// TODO Auto-generated method stub
 			
 		}
-		
 	}
 
 	private void checkLevelUpdated(User user, boolean upgraded) {

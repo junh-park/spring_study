@@ -3,7 +3,7 @@ package com.jun.spring_practice.user.service;
 import com.jun.spring_practice.exception.TestUserServiceException;
 import com.jun.spring_practice.user.entity.User;
 
-public class TestUserService extends UserService {
+public class TestUserService extends UserServiceImpl {
 	private String id;
 
 	TestUserService(String id) {
