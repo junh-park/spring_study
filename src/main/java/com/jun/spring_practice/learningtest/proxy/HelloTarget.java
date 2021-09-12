@@ -1,4 +1,4 @@
-package com.jun.spring_practice.learningtest;
+package com.jun.spring_practice.learningtest.proxy;
 
 public class HelloTarget implements Hello{
 

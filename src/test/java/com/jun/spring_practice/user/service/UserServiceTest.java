@@ -7,6 +7,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,6 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
@@ -29,21 +31,30 @@ import com.jun.spring_practice.user.dao.UserDao;
 import com.jun.spring_practice.user.domain.Level;
 import com.jun.spring_practice.user.entity.User;
 import com.jun.spring_practice.user.service.UserServiceTest.MockMailSender;
+import com.jun.spring_practice.user.service.factorybean.TxProxyFactoryBean;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "/applicationContext.xml")
 public class UserServiceTest {
 
-	@Autowired UserService userService;
-	@Autowired UserServiceImpl userServiceImpl;
-	@Autowired UserDao userDao;
-	@Autowired PlatformTransactionManager transactionManager;
-	@Autowired MailSender mailSender;
+	@Autowired
+	ApplicationContext context;
+	@Autowired
+	UserService userService;
+	@Autowired
+	UserServiceImpl userServiceImpl;
+	@Autowired
+	UserDao userDao;
+	@Autowired
+	PlatformTransactionManager transactionManager;
+	@Autowired
+	MailSender mailSender;
 	List<User> users;
 
 	@Before
 	public void setUp() {
-		users = Arrays.asList(new User("1", "jun", "p1", Level.BASIC, MIN_LOGCOUNT_FOR_SILVER - 1, 0, "jun@hotmail.com"),
+		users = Arrays.asList(
+				new User("1", "jun", "p1", Level.BASIC, MIN_LOGCOUNT_FOR_SILVER - 1, 0, "jun@hotmail.com"),
 				new User("2", "hong", "p2", Level.BASIC, MIN_LOGCOUNT_FOR_SILVER, 0, "jun@hotmail.com"),
 				new User("3", "park", "p3", Level.SILVER, 60, MIN_RECOMMEND_GOLD - 1, "jun@hotmail.com"),
 				new User("4", "seo", "p4", Level.SILVER, 60, MIN_RECOMMEND_GOLD, "jun@hotmail.com"),
@@ -84,55 +95,56 @@ public class UserServiceTest {
 	}
 
 	@Test
+	@DirtiesContext
 	public void upgradeAllOrNothing() throws Exception {
 		TestUserService testUserService = new TestUserService(users.get(3).getId());
 		testUserService.setUserDao(this.userDao);
 		testUserService.setMailSender(mailSender);
-		
-		UserServiceTx userServiceTx = new UserServiceTx();
-		userServiceTx.setTransactionManager(transactionManager);
-		userServiceTx.setUserService(testUserService);
-		
+
+		TxProxyFactoryBean txProxyFactoryBean = context.getBean("&userService", TxProxyFactoryBean.class);
+		txProxyFactoryBean.setTarget(testUserService);
+		UserService txUserService = (UserService) txProxyFactoryBean.getObject();
+
 		for (User user : users) {
 			userDao.add(user);
 		}
 
 		try {
-			userServiceTx.upgradeLevels();
+			txUserService.upgradeLevels();
 			fail("TestUserServiceException expected");
-		} catch (TestUserServiceException e) {		}
+		} catch (TestUserServiceException e) {
+		}
 		checkLevelUpdated(users.get(1), false);
 	}
-	
+
 	@Test
 	public void mockUpgradeLevels() {
 		UserServiceImpl userServiceImpl = new UserServiceImpl();
-		
+
 		UserDao mockUserDao = mock(UserDao.class);
 		when(mockUserDao.getAll()).thenReturn(this.users);
 		userServiceImpl.setUserDao(mockUserDao);
-		
+
 		MailSender mockMailSender = mock(MailSender.class);
 		userServiceImpl.setMailSender(mockMailSender);
-		
+
 		userServiceImpl.upgradeLevels();
-	
+
 		verify(mockUserDao, times(2)).update(any(User.class));
 		verify(mockUserDao, times(2)).update(any(User.class));
 		verify(mockUserDao).update(users.get(1));
 		assertThat(users.get(1).getLevel(), is(Level.SILVER));
 		verify(mockUserDao).update(users.get(3));
 		assertThat(users.get(3).getLevel(), is(Level.GOLD));
-		
+
 		ArgumentCaptor<SimpleMailMessage> mailMessageArg = ArgumentCaptor.forClass(SimpleMailMessage.class);
 		verify(mockMailSender, times(2)).send(mailMessageArg.capture());
 		List<SimpleMailMessage> mailMessages = mailMessageArg.getAllValues();
 		assertThat(mailMessages.get(0).getTo()[0], is(users.get(1).getEmail()));
 		assertThat(mailMessages.get(1).getTo()[0], is(users.get(3).getEmail()));
-		
-	
+
 	}
-	
+
 	@Test
 	@DirtiesContext
 	public void upgradeLevelsSendingEmail() {
@@ -142,24 +154,24 @@ public class UserServiceTest {
 
 		MockMailSender mockMailSender = new MockMailSender();
 		userServiceImpl.setMailSender(mockMailSender);
-		
+
 		userServiceImpl.upgradeLevels();
-		
+
 		checkLevelUpdated(users.get(0), false);
 		checkLevelUpdated(users.get(1), true);
 		checkLevelUpdated(users.get(2), false);
 		checkLevelUpdated(users.get(3), true);
 		checkLevelUpdated(users.get(4), false);
-		
+
 		List<String> requests = mockMailSender.getRequests();
 		assertThat(requests.size(), is(2));
 		assertThat(requests.get(0), is(users.get(1).getEmail()));
 		assertThat(requests.get(1), is(users.get(3).getEmail()));
 	}
-	
+
 	static class MockMailSender implements MailSender {
 		private List<String> requests = new ArrayList<String>();
-		
+
 		public List<String> getRequests() {
 			return requests;
 		}
@@ -169,7 +181,7 @@ public class UserServiceTest {
 		}
 
 		public void send(SimpleMailMessage... simpleMessages) throws MailException {
-			
+
 		}
 	}
 
