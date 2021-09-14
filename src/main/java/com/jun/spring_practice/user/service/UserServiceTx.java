@@ -1,5 +1,6 @@
 package com.jun.spring_practice.user.service;
 
+import org.springframework.mail.MailSender;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
@@ -31,6 +32,12 @@ public class UserServiceTx implements UserService {
 
 	public void setUserService(UserService userService) {
 		this.userService = userService;
+	}
+
+	@Override
+	public void setMailSender(MailSender mailSender) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

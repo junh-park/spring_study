@@ -111,5 +111,10 @@
 			<artifactId>spring-aop</artifactId>
 			<version>5.1.4.RELEASE</version>
 		</dependency>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjtools</artifactId>
+			<version>1.6.6</version>
+		</dependency>
 	</dependencies>
 </project>

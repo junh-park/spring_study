@@ -5,9 +5,12 @@ import static com.jun.spring_practice.user.service.NormalUserUpgradePolicy.MIN_R
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,7 +19,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.mail.MailException;
@@ -31,8 +33,6 @@ import com.jun.spring_practice.exception.TestUserServiceException;
 import com.jun.spring_practice.user.dao.UserDao;
 import com.jun.spring_practice.user.domain.Level;
 import com.jun.spring_practice.user.entity.User;
-import com.jun.spring_practice.user.service.UserServiceTest.MockMailSender;
-import com.jun.spring_practice.user.service.factorybean.TxProxyFactoryBean;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "/applicationContext.xml")
@@ -43,7 +43,7 @@ public class UserServiceTest {
 	@Autowired
 	UserService userService;
 	@Autowired
-	UserServiceImpl userServiceImpl;
+	UserService testUserService;
 	@Autowired
 	UserDao userDao;
 	@Autowired
@@ -60,12 +60,11 @@ public class UserServiceTest {
 				new User("3", "park", "p3", Level.SILVER, 60, MIN_RECOMMEND_GOLD - 1, "jun@hotmail.com"),
 				new User("4", "seo", "p4", Level.SILVER, 60, MIN_RECOMMEND_GOLD, "jun@hotmail.com"),
 				new User("5", "guang", "p5", Level.GOLD, 100, Integer.MAX_VALUE, "jun@hotmail.com"));
-
-		userDao.deleteAll();
 	}
-
+	
 	@Test
 	public void upgradeLevels() throws Exception {
+		userDao.deleteAll();
 		for (User user : users) {
 			userDao.add(user);
 		}
@@ -81,6 +80,8 @@ public class UserServiceTest {
 
 	@Test
 	public void add() {
+		userDao.deleteAll();
+
 		User userWithLevel = users.get(4);
 		User userWithoutLevel = users.get(0);
 		userWithoutLevel.setLevel(null);
@@ -96,22 +97,15 @@ public class UserServiceTest {
 	}
 
 	@Test
-	@DirtiesContext
 	public void upgradeAllOrNothing() throws Exception {
-		TestUserService testUserService = new TestUserService(users.get(3).getId());
-		testUserService.setUserDao(this.userDao);
-		testUserService.setMailSender(mailSender);
-
-		ProxyFactoryBean txProxyFactoryBean = context.getBean("&userService", ProxyFactoryBean.class);
-		txProxyFactoryBean.setTarget(testUserService);
-		UserService txUserService = (UserService) txProxyFactoryBean.getObject();
+		userDao.deleteAll();
 
 		for (User user : users) {
 			userDao.add(user);
 		}
 
 		try {
-			txUserService.upgradeLevels();
+			this.testUserService.upgradeLevels();
 			fail("TestUserServiceException expected");
 		} catch (TestUserServiceException e) {
 		}
@@ -120,6 +114,8 @@ public class UserServiceTest {
 
 	@Test
 	public void mockUpgradeLevels() {
+		userDao.deleteAll();
+
 		UserServiceImpl userServiceImpl = new UserServiceImpl();
 
 		UserDao mockUserDao = mock(UserDao.class);
@@ -149,14 +145,16 @@ public class UserServiceTest {
 	@Test
 	@DirtiesContext
 	public void upgradeLevelsSendingEmail() {
+		userDao.deleteAll();
+
 		for (User user : users) {
 			userDao.add(user);
 		}
 
 		MockMailSender mockMailSender = new MockMailSender();
-		userServiceImpl.setMailSender(mockMailSender);
+		userService.setMailSender(mockMailSender);
 
-		userServiceImpl.upgradeLevels();
+		userService.upgradeLevels();
 
 		checkLevelUpdated(users.get(0), false);
 		checkLevelUpdated(users.get(1), true);
@@ -170,6 +168,7 @@ public class UserServiceTest {
 		assertThat(requests.get(1), is(users.get(3).getEmail()));
 	}
 
+ 
 	static class MockMailSender implements MailSender {
 		private List<String> requests = new ArrayList<String>();
 

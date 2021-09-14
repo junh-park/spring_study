@@ -8,6 +8,8 @@ import java.lang.reflect.Proxy;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.junit.Test;
+import org.springframework.aop.ClassFilter;
+import org.springframework.aop.Pointcut;
 import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.aop.support.DefaultPointcutAdvisor;
 import org.springframework.aop.support.NameMatchMethodPointcut;
@@ -23,8 +25,7 @@ public class DynamicProxyTest {
 	public void simpleProxy() {
 		HelloTarget helloTarget = new HelloTarget();
 		
-		assertThat(helloTarget.sayHi("Jun"), is("Hi Jun"));
-		assertThat(helloTarget.sayThankYou("Jun"), is("Thank You Jun"));
+		lowercaseTest(helloTarget);
 	}
 
 	@Test
@@ -73,11 +74,53 @@ public class DynamicProxyTest {
 		assertThat(proxiedHello.sayHi("Jun"), is("HI JUN"));
 		assertThat(proxiedHello.sayThankYou("Jun"), is("Thank You Jun"));	}
 	
+	@Test
+	public void classNamePointcutAdvisor() {
+		NameMatchMethodPointcut classMethodPointcut = new NameMatchMethodPointcut() {
+			public ClassFilter getClassFilter() {
+				return new ClassFilter() {
+					public boolean matches(Class<?> clazz) {
+						return clazz.getSimpleName().startsWith("HelloT");
+					}
+				};
+			}
+		};
+		classMethodPointcut.setMappedName("sayH*");
+		
+		checkAdviced(new HelloTarget(), classMethodPointcut, true);
+		
+		class HelloWorld extends HelloTarget {};
+		checkAdviced(new HelloWorld(), classMethodPointcut, false);
+		
+		class HelloJun extends HelloTarget {};
+		checkAdviced(new HelloJun(), classMethodPointcut, false);
+	}
+	
+	private void checkAdviced(Object target, Pointcut pointcut, boolean adviced) {
+		ProxyFactoryBean pfBean = new ProxyFactoryBean();
+		pfBean.setTarget(target);
+		pfBean.addAdvisor(new DefaultPointcutAdvisor(pointcut, new UppercaseAdvice()));
+		Hello proxiedHello = (Hello) pfBean.getObject();
+		
+		if(adviced) {
+			assertThat(proxiedHello.sayHello("Jun"), is("HELLO JUN"));
+			assertThat(proxiedHello.sayHi("Jun"), is("HI JUN"));
+			assertThat(proxiedHello.sayThankYou("Jun"), is("Thank You Jun"));
+		} else {
+			lowercaseTest(proxiedHello);
+		}
+	}
+
 	private void uppercaseTest(Hello proxiedHello) {
 		assertThat(proxiedHello.sayHello("Jun"), is("HELLO JUN"));
 		assertThat(proxiedHello.sayHi("Jun"), is("HI JUN"));
 		assertThat(proxiedHello.sayThankYou("Jun"), is("THANK YOU JUN"));
 	}
 	
+	private void lowercaseTest(Hello proxiedHello) {
+		assertThat(proxiedHello.sayHello("Jun"), is("Hello Jun"));
+		assertThat(proxiedHello.sayHi("Jun"), is("Hi Jun"));
+		assertThat(proxiedHello.sayThankYou("Jun"), is("Thank You Jun"));
+	}
 	
 }

@@ -8,6 +8,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
+import com.jun.spring_practice.exception.TestUserServiceException;
 import com.jun.spring_practice.user.dao.UserDao;
 import com.jun.spring_practice.user.domain.Level;
 import com.jun.spring_practice.user.entity.User;
@@ -76,4 +77,13 @@ public class UserServiceImpl implements UserService {
 //	public void setUserLevelUpgradePolicy(UserLevelUpgradePolicy upgradePolicy) {
 //		this.upgradePolicy = upgradePolicy;
 //	}
+	
+	static class TestUserServiceImpl extends UserServiceImpl {
+		private String id = "4";
+
+		protected void upgradeLevel(User user) {
+			if(user.getId().equals(this.id)) throw new TestUserServiceException();
+			super.upgradeLevel(user);
+		}
+	}
 }
