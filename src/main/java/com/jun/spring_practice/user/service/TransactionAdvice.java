@@ -1,5 +1,7 @@
 package com.jun.spring_practice.user.service;
 
+import java.util.Properties;
+
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -15,7 +17,6 @@ public class TransactionAdvice implements MethodInterceptor {
 
 	public Object invoke(MethodInvocation invocation) throws Throwable {
 		TransactionStatus status = this.transactionManager.getTransaction(new DefaultTransactionDefinition());
-		
 		try {
 			Object ret = invocation.proceed();
 			this.transactionManager.commit(status);
