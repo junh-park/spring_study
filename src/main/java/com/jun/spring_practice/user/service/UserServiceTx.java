@@ -1,5 +1,7 @@
 package com.jun.spring_practice.user.service;
 
+import java.util.List;
+
 import org.springframework.mail.MailSender;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -34,10 +36,17 @@ public class UserServiceTx implements UserService {
 		this.userService = userService;
 	}
 
-	@Override
-	public void setMailSender(MailSender mailSender) {
-		// TODO Auto-generated method stub
-		
+	public List<User> getAll() {
+		return null;
 	}
 
+	public User get(String id) {
+		return null;
+	}
+
+	public void deleteAll() {
+	}
+
+	public void update(User user) {
+	}
 }

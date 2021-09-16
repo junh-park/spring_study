@@ -10,18 +10,24 @@
 		http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
 		http://www.springframework.org/schema/tx
 		http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
-
-	<aop:config>
-		<aop:advisor advice-ref="transactionAdvice" pointcut="execution(* *..*ServiceImpl.upgrade*(..))"/>
-	</aop:config> 
-	<tx:advice id="trasanctionAdvice" transaction-manager="transactionManager">
+	
+	<tx:annotation-driven/>
+<!-- 	<aop:config>
+		<aop:advisor advice-ref="transactionAdvice"
+			pointcut="bean(*Service)" />
+	</aop:config>
+	<tx:advice id="transactionAdvice">
 		<tx:attributes>
-			<tx:method name="get*" propagation="REQUIRED" read-only="true" timeout="30"/>
-			<tx:method name="upgrade*" propagation="REQUIRES_NEW" isolation="SERIALIZABLE"/>
-			<tx:method name="*" propagation="REQUIRED"/>
+			<tx:method name="get*" read-only="true"/>
+			<tx:method name="*"/>
 		</tx:attributes>
-	</tx:advice>	
- 
+	</tx:advice> -->
+	<!-- <tx:advice id="trasanctionAdvice" transaction-manager="transactionManager"> 
+		<tx:attributes> <tx:method name="get*" propagation="REQUIRED" read-only="true" 
+		timeout="30"/> <tx:method name="upgrade*" propagation="REQUIRES_NEW" isolation="SERIALIZABLE"/> 
+		<tx:method name="*" propagation="REQUIRED"/> </tx:attributes> </tx:advice> -->
+	
+	
 	<bean id="dataSource"
 		class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
 		<!-- <property name="driverClass" value="oracle.jdbc.driver.OracleDriver" 
@@ -34,42 +40,46 @@
 		<property name="username" value="root" />
 		<property name="password" value="qkrwnsghd" />
 	</bean>
-	<bean id="userDao" class="com.jun.spring_practice.user.dao.UserDaoJDBC">
+	<bean id="userDao"
+		class="com.jun.spring_practice.user.dao.UserDaoJDBC">
 		<property name="dataSource" ref="dataSource" />
 	</bean>
 	<bean id="userService" class="com.jun.spring_practice.user.service.UserServiceImpl">
 		<property name="userDao" ref="userDao" />
 		<property name="mailSender" ref="mailSender" />
-		<!-- <property name="userLevelUpgradePolicy" ref="userLevelUpgradePolicy" /> -->
+		<!-- <property name="userLevelUpgradePolicy" ref="userLevelUpgradePolicy" 
+			/> -->
 	</bean>
-	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource" ref="dataSource" />
 	</bean>
- 	<bean id="testUserService" class="com.jun.spring_practice.user.service.UserServiceImpl$TestUserServiceImpl" 
- 			parent="userService"/>
- 	
- 
-	<bean id="mailSender" class="com.jun.spring_practice.user.service.DummyMailSender" />
-	
-	<!-- 	<bean id="userService" class="org.springframework.aop.framework.ProxyFactoryBean">
-		<property name="target" ref="userServiceImpl"/>
-		<property name="interceptorNames">
-			<list>
-				<value>transactionAdvisor</value>
-			</list>
+	<bean id="testUserService" class="com.jun.spring_practice.user.service.TestUserServiceImpl"
+		parent="userService" />
+
+	<bean id="mailSender"
+		class="com.jun.spring_practice.user.service.DummyMailSender" />
+
+<!-- 	<bean id="transactionAdvice" class="org.springframework.transaction.interceptor.TransactionInterceptor">
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="transactionAttributes">
+			<props>
+				<prop key="get*">PROPAGATION_REQUIRE, readOnly</prop>
+				<prop key="*">PROPAGATION_REQUIRED</prop>
+			</props>
 		</property>
 	</bean> -->
-	<!-- <bean id="transactionAdvice" class="com.jun.spring_practice.user.service.TransactionAdvice">
-		<property name="transactionManager" ref="transactionManager" />
+	<!-- <bean id="userService" class="org.springframework.aop.framework.ProxyFactoryBean"> 
+		<property name="target" ref="userServiceImpl"/> <property name="interceptorNames"> 
+		<list> <value>transactionAdvisor</value> </list> </property> </bean> -->
+
+	<!-- <bean id="transactionPointcut"
+		class="org.springframework.aop.aspectj.AspectJExpressionPointcut">
+		<property name="expression"
+			value="execution(* *..*ServiceImpl.upgrade*(..))" />
 	</bean>
-	<bean id="transactionPointcut" class="org.springframework.aop.aspectj.AspectJExpressionPointcut">
-		<property name="expression" value="execution(* *..*ServiceImpl.upgrade*(..))" />
-	</bean>
-	<bean id="transactionAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor"> 
-		<property name="advice" ref="transactionAdvice"/>
-		<property name="pointcut" ref="transactionPointcut" />
-	</bean>
-	<bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" /> -->
+	<bean
+		class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" /> -->
 	<!-- <bean id="userLevelUpgradePolicy" class="com.jun.spring_practice.user.service.NormalUserUpgradePolicy"> 
 		<property name="userDao" ref="userDao" /> </bean> -->
 

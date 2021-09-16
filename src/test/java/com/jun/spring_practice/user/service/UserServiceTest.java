@@ -4,6 +4,7 @@ import static com.jun.spring_practice.user.service.NormalUserUpgradePolicy.MIN_L
 import static com.jun.spring_practice.user.service.NormalUserUpgradePolicy.MIN_RECOMMEND_GOLD;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -21,13 +22,21 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.dao.TransientDataAccessResourceException;
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
+import org.springframework.test.annotation.Commit;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import com.jun.spring_practice.exception.TestUserServiceException;
 import com.jun.spring_practice.user.dao.UserDao;
@@ -36,6 +45,7 @@ import com.jun.spring_practice.user.entity.User;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "/applicationContext.xml")
+@Transactional
 public class UserServiceTest {
 
 	@Autowired
@@ -79,9 +89,9 @@ public class UserServiceTest {
 	}
 
 	@Test
+//	@Rollback
 	public void add() {
 		userDao.deleteAll();
-
 		User userWithLevel = users.get(4);
 		User userWithoutLevel = users.get(0);
 		userWithoutLevel.setLevel(null);
@@ -96,10 +106,11 @@ public class UserServiceTest {
 		assertThat(userWithoutLevelRead.getLevel(), is(Level.BASIC));
 	}
 
+	
 	@Test
+	@Transactional(propagation = Propagation.NEVER)
 	public void upgradeAllOrNothing() throws Exception {
 		userDao.deleteAll();
-
 		for (User user : users) {
 			userDao.add(user);
 		}
@@ -112,10 +123,23 @@ public class UserServiceTest {
 		checkLevelUpdated(users.get(1), false);
 	}
 
+	@Test(expected=TransientDataAccessResourceException.class)
+	@Transactional(propagation = Propagation.NEVER)
+	public void readOnlyTransactionAttributed() {
+		testUserService.getAll();
+	}
+	
 	@Test
+	public void transactionSync() { 
+			userService.deleteAll();
+			
+			userService.add(users.get(0));
+			userService.add(users.get(1));
+	}
+
+//	@Test
 	public void mockUpgradeLevels() {
 		userDao.deleteAll();
-
 		UserServiceImpl userServiceImpl = new UserServiceImpl();
 
 		UserDao mockUserDao = mock(UserDao.class);
@@ -139,37 +163,36 @@ public class UserServiceTest {
 		List<SimpleMailMessage> mailMessages = mailMessageArg.getAllValues();
 		assertThat(mailMessages.get(0).getTo()[0], is(users.get(1).getEmail()));
 		assertThat(mailMessages.get(1).getTo()[0], is(users.get(3).getEmail()));
-
 	}
+	
 
-	@Test
-	@DirtiesContext
+//	@Test
+//	@DirtiesContext 
 	public void upgradeLevelsSendingEmail() {
-		userDao.deleteAll();
 
-		for (User user : users) {
-			userDao.add(user);
-		}
-
-		MockMailSender mockMailSender = new MockMailSender();
-		userService.setMailSender(mockMailSender);
-
-		userService.upgradeLevels();
-
-		checkLevelUpdated(users.get(0), false);
-		checkLevelUpdated(users.get(1), true);
-		checkLevelUpdated(users.get(2), false);
-		checkLevelUpdated(users.get(3), true);
-		checkLevelUpdated(users.get(4), false);
-
-		List<String> requests = mockMailSender.getRequests();
-		assertThat(requests.size(), is(2));
-		assertThat(requests.get(0), is(users.get(1).getEmail()));
-		assertThat(requests.get(1), is(users.get(3).getEmail()));
+//		userDao.deleteAll();
+//
+//		for (User user : users) {
+//			userDao.add(user);
+//		}
+//
+//		MockMailSender mockMailSender = new MockMailSender();
+//		userService.setMailSender(mockMailSender);
+//
+//		userService.upgradeLevels();
+//
+//		checkLevelUpdated(users.get(0), false);
+//		checkLevelUpdated(users.get(1), true);
+//		checkLevelUpdated(users.get(2), false);
+//		checkLevelUpdated(users.get(3), true);
+//		checkLevelUpdated(users.get(4), false);
+//
+//		List<String> requests = mockMailSender.getRequests();
+//		assertThat(requests.size(), is(2));
+//		assertThat(requests.get(0), is(users.get(1).getEmail()));
+//		assertThat(requests.get(1), is(users.get(3).getEmail()));
 	}
-
- 
-	static class MockMailSender implements MailSender {
+	class MockMailSender implements MailSender {
 		private List<String> requests = new ArrayList<String>();
 
 		public List<String> getRequests() {

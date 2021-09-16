@@ -6,6 +6,7 @@ import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import com.jun.spring_practice.exception.TestUserServiceException;
@@ -13,6 +14,7 @@ import com.jun.spring_practice.user.dao.UserDao;
 import com.jun.spring_practice.user.domain.Level;
 import com.jun.spring_practice.user.entity.User;
 
+@Transactional
 public class UserServiceImpl implements UserService {
 	UserDao userDao;
 	private MailSender mailSender;
@@ -26,6 +28,7 @@ public class UserServiceImpl implements UserService {
 			user.setLevel(Level.BASIC);
 		userDao.add(user);
 	}
+	
 
 	public void upgradeLevels() {
 		List<User> users = userDao.getAll();
@@ -78,12 +81,8 @@ public class UserServiceImpl implements UserService {
 //		this.upgradePolicy = upgradePolicy;
 //	}
 	
-	static class TestUserServiceImpl extends UserServiceImpl {
-		private String id = "4";
-
-		protected void upgradeLevel(User user) {
-			if(user.getId().equals(this.id)) throw new TestUserServiceException();
-			super.upgradeLevel(user);
-		}
-	}
+	public List<User> getAll() { return userDao.getAll(); }
+	public User get(String id) { return userDao.get(id); }
+	public void deleteAll() { userDao.deleteAll();	}
+	public void update(User user) { userDao.update(user); }
 }
