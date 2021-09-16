@@ -9,6 +9,11 @@ public class BaseSqlService implements SqlService{
 	private SqlReader sqlReader;
 	private SqlRegistry sqlRegistry;
 
+	public BaseSqlService() {
+		setSqlReader(new JaxbXmlSqlReader());
+		setSqlRegistry(new HashMapSqlRegistry());
+	}
+	
 	@PostConstruct
 	public void loadSql() {
 		this.sqlReader.read(sqlRegistry);
