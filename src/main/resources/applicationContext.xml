@@ -34,12 +34,13 @@
 		<property name="dataSource" ref="dataSource" />
 		<property name="sqlService" ref="sqlService" />
 	</bean>
-	<bean id="sqlService" class="com.jun.spring_practice.user.sqlservice.BaseSqlService">
+	<bean id="sqlService" class="com.jun.spring_practice.user.sqlservice.DefaultSqlService">
+		<property name="sqlRegistry" ref="sqlRegistry" />
 	</bean>
 		<bean id="sqlReader" class="com.jun.spring_practice.user.sqlservice.JaxbXmlSqlReader">
-		<property name="sqlmapFile" value="sqlmap.xml" />
+		<property name="sqlmapFile" value="classpath:sqlmap.xml" />
 	</bean>
-	<bean id="sqlRegistry" class="com.jun.spring_practice.user.sqlservice.HashMapSqlRegistry" />
+	<bean id="sqlRegistry" class="com.jun.spring_practice.user.sqlservice.ConcurrentHashMapSqlRegistry" />
 	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource" ref="dataSource" />
 	</bean>
