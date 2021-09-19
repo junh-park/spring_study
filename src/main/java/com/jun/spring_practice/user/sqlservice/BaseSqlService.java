@@ -5,12 +5,13 @@ import javax.annotation.PostConstruct;
 import com.jun.spring_practice.exception.SqlNotFoundException;
 import com.jun.spring_practice.exception.SqlRetrievalFailureException;
 
-public class DefaultSqlService implements SqlService{
+public class BaseSqlService implements SqlService{
 	private SqlReader sqlReader;
 	private SqlRegistry sqlRegistry;
 
-	public DefaultSqlService() {
+	public BaseSqlService() {
 		setSqlReader(new JaxbXmlSqlReader());
+		setSqlRegistry(new EmbeddedDbSqlRegistry());
 	}
 	
 	@PostConstruct

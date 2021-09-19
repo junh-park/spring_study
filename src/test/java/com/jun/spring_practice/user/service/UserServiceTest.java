@@ -32,13 +32,14 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.jun.spring_practice.TestApplicationContext;
 import com.jun.spring_practice.exception.TestUserServiceException;
 import com.jun.spring_practice.user.dao.UserDao;
 import com.jun.spring_practice.user.domain.Level;
 import com.jun.spring_practice.user.entity.User;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "/applicationContext.xml")
+@ContextConfiguration(classes = TestApplicationContext.class)
 @Transactional
 @Rollback
 public class UserServiceTest {
