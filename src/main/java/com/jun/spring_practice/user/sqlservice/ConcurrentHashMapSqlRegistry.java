@@ -21,14 +21,14 @@ public class ConcurrentHashMapSqlRegistry implements UpdatableSqlRegistry {
 
 	public void updateSql(String key, String sql) throws SqlUpdateFailureException {
 		if(sqlMap.get(key) == null) {
-			throw new SqlNotFoundException("Failed to find the sql using the key " + key);
+			throw new SqlUpdateFailureException("Failed to find the sql using the key " + key);
 		}
 		sqlMap.put(key, sql);
 	}
 
 	public void updateSql(Map<String, String> sqlmap) throws SqlUpdateFailureException {
 		for (Map.Entry<String, String> entry : sqlmap.entrySet()) {
-			sqlmap.put(entry.getKey(), entry.getValue());
+			updateSql(entry.getKey(), entry.getValue());
 		}
 	}
 
