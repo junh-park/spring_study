@@ -6,8 +6,8 @@ import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.ImportResource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
@@ -16,10 +16,8 @@ import org.springframework.oxm.Unmarshaller;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.aop.framework.autoproxy.InfrastructureAdvisorAutoProxyCreator;
 
 import com.jun.spring_practice.user.dao.UserDao;
-import com.jun.spring_practice.user.dao.UserDaoJDBC;
 import com.jun.spring_practice.user.service.DummyMailSender;
 import com.jun.spring_practice.user.service.TestUserServiceImpl;
 import com.jun.spring_practice.user.service.UserService;
@@ -32,9 +30,9 @@ import com.mysql.cj.jdbc.Driver;
 
 @Configuration
 @EnableTransactionManagement
+@ComponentScan(basePackages="com.jun.spring_practice.user.dao")
 public class TestApplicationContext {
-	@Autowired
-	SqlService sqlService;
+	@Autowired UserDao userDao;
 	
 	@Bean
 	public DataSource dataSource() {
@@ -64,17 +62,9 @@ public class TestApplicationContext {
 	}
 
 	@Bean
-	public UserDao userDao() {
-		UserDaoJDBC dao = new UserDaoJDBC();
-		dao.setDataSource(dataSource());
-		dao.setSqlService(this.sqlService);
-		return dao;
-	}
-
-	@Bean
 	public UserService userService() {
 		UserServiceImpl service = new UserServiceImpl();
-		service.setUserDao(userDao());
+		service.setUserDao(this.userDao);
 		service.setMailSender(mailSender());
 		return service;
 	}
@@ -82,7 +72,7 @@ public class TestApplicationContext {
 	@Bean
 	public UserService testUserService() {
 		TestUserServiceImpl testService = new TestUserServiceImpl();
-		testService.setUserDao(userDao());
+		testService.setUserDao(this.userDao);
 		testService.setMailSender(mailSender());
 		return testService;
 	}
@@ -120,6 +110,4 @@ public class TestApplicationContext {
 		sqlService.setUnmarshaller(unmarshaller());
 		return sqlService;
 	}
-
-
 }

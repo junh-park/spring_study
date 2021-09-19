@@ -6,15 +6,19 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
 
 import com.jun.spring_practice.user.domain.Level;
 import com.jun.spring_practice.user.entity.User;
 import com.jun.spring_practice.user.sqlservice.SqlService;
 
+@Component
 public class UserDaoJDBC implements UserDao {
 	private JdbcTemplate jdbcTemplate;
+	@Autowired
 	private SqlService sqlService;
 	
 	private RowMapper<User> userMapper = new RowMapper<User>() {
@@ -34,12 +38,9 @@ public class UserDaoJDBC implements UserDao {
 	public UserDaoJDBC() {
 	}
 
+	@Autowired
 	public void setDataSource(DataSource dataSource) {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
-	}
-
-	public void setSqlService(SqlService sqlService) {
-		this.sqlService = sqlService;
 	}
 
 	public void add(final User user) {
