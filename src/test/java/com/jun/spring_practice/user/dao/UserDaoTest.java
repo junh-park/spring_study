@@ -14,18 +14,20 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.jun.spring_practice.TestApplicationContext;
+import com.jun.spring_practice.AppContext;
 import com.jun.spring_practice.user.domain.Level;
 import com.jun.spring_practice.user.entity.User;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = TestApplicationContext.class)
+@ContextConfiguration(classes = {AppContext.class})
+@ActiveProfiles("test")
 public class UserDaoTest {
 
-	@Autowired	private UserDao dao;
+	@Autowired private UserDao dao;
 	@Autowired DataSource dataSource;
 
 	private User user1;

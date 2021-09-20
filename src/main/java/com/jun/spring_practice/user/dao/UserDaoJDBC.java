@@ -10,12 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import com.jun.spring_practice.user.domain.Level;
 import com.jun.spring_practice.user.entity.User;
 import com.jun.spring_practice.user.sqlservice.SqlService;
 
-@Component
+@Repository("userDao")
 public class UserDaoJDBC implements UserDao {
 	private JdbcTemplate jdbcTemplate;
 	@Autowired

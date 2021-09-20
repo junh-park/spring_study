@@ -2,22 +2,21 @@ package com.jun.spring_practice.user.service;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 
-import com.jun.spring_practice.exception.TestUserServiceException;
 import com.jun.spring_practice.user.dao.UserDao;
 import com.jun.spring_practice.user.domain.Level;
 import com.jun.spring_practice.user.entity.User;
 
 @Transactional
+@Service("userService")
 public class UserServiceImpl implements UserService {
-	UserDao userDao;
-	private MailSender mailSender;
+	@Autowired UserDao userDao;
+	@Autowired private MailSender mailSender;
 	
 //	UserLevelUpgradePolicy upgradePolicy;
 	public static final int MIN_RECOMMEND_GOLD = 30;

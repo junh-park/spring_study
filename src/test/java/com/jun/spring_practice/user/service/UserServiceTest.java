@@ -20,30 +20,35 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.dao.TransientDataAccessResourceException;
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.jun.spring_practice.TestApplicationContext;
+import com.jun.spring_practice.AppContext;
 import com.jun.spring_practice.exception.TestUserServiceException;
 import com.jun.spring_practice.user.dao.UserDao;
 import com.jun.spring_practice.user.domain.Level;
 import com.jun.spring_practice.user.entity.User;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = TestApplicationContext.class)
-@Transactional
+@ContextConfiguration(classes = {AppContext.class})
+@ActiveProfiles("test")
+//@Transactional
 @Rollback
 public class UserServiceTest {
 
+	@Autowired
+	DefaultListableBeanFactory bf;
 	@Autowired
 	ApplicationContext context;
 	@Autowired
@@ -68,6 +73,12 @@ public class UserServiceTest {
 				new User("5", "guang", "p5", Level.GOLD, 100, Integer.MAX_VALUE, "jun@hotmail.com"));
 	}
 	
+	@Test
+	public void beans() {
+		for (String name : bf.getBeanDefinitionNames()) {
+			System.out.println(name + " \t " + bf.getBean(name).getClass().getName());
+		}
+	}
 	@Test
 	public void upgradeLevels() throws Exception {
 		userDao.deleteAll();

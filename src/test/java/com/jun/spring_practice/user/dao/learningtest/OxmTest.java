@@ -16,12 +16,12 @@ import org.springframework.oxm.XmlMappingException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.jun.spring_practice.TestApplicationContext;
+import com.jun.spring_practice.AppContext;
 import com.jun.spring_practice.user.sqlservice.jaxb.SqlType;
 import com.jun.spring_practice.user.sqlservice.jaxb.Sqlmap;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = TestApplicationContext.class)
+@ContextConfiguration(classes = AppContext.TestAppContext.class)
 public class OxmTest {
 	@Autowired Unmarshaller unmarshaller;
 	
