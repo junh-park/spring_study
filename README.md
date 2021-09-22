@@ -69,3 +69,36 @@ This method requires PropertySourcesPlaceholderConfigurer
 
 @Enable* = @Import(value=something.class) + public @interface annotationName
 ```
+
+# What’s POJO
+•	Not bounded to a specific contract
+•	Not bounded to a specific environment
+•	Designed to be based on OOP 
+o	Separating roles and responsibilities from a class
+o	Not having a long if/switch statement
+o	Being able to reuse the code due to tight coupling
+
+# What’s IoC/DI
+•	Core of Spring and core development principle, AOP and PSA is based on this
+•	Why separate 2 objects using interface and DI from outside? – for flexible extension
+•	When A depends on B, A->B, B can be extended/replaced(Open to extension), but A doesn’t get affected and can be reused (closed for modification) OCP
+•	DI applications
+o	Change of core functionalities during runtime - Strategy pattern
+o	Dynamic change of core functionalities during runtime
+o	Adding extra functionalities – Decorator pattern
+o	Change of interface - adaptor pattern
+o	Proxy – Proxy pattern
+o	Template/Callback pattern
+o	Singleton and Object scope
+o	Test
+# What’s AOP
+*	A supplementary programming technique supporting OOP to overcome its limitation and downsides
+*	AOP Applications
+  *	Using dynamic proxy
+  *	Using extension of programming language over Java’s limitation
+*3.	Applying AOP
+  * Using prepared AOP
+  *	Having a dedicated AOP team
+What’s PSA
+1.	Portable Service Abstraction that can utilise technology using the same way regardless of environments and specific technologies
+
